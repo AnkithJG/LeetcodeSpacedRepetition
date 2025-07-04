@@ -65,11 +65,27 @@ def log_problem(data: ProblemLog, user_id: str = Depends(verify_token)):
 @app.get("/reviews")
 def get_todays_reviews(user_id: str = Depends(verify_token)):
     now = datetime.utcnow()
-    docs = db.collection(f'users/{user_id}/leetcode_problems') \
-             .where("next_review_date", "<=", now).stream()
 
-    reviews = [doc.to_dict() for doc in docs]
-    return {"reviews_due": reviews}
+    due_docs = db.collection(f'users/{user_id}/leetcode_problems') \
+                 .where("next_review_date", "<=", now).stream()
+
+    due_reviews = [doc.to_dict() for doc in due_docs]
+
+    if due_reviews:
+        return {"reviews_due": due_reviews}
+
+
+    upcoming_docs = db.collection(f'users/{user_id}/leetcode_problems') \
+                      .order_by("next_review_date") \
+                      .limit(1) \
+                      .stream()
+
+    next_up = [doc.to_dict() for doc in upcoming_docs]
+
+    return {
+        "reviews_due": [],
+        "next_up": next_up[0] if next_up else None
+    }
 
 @app.get("/all_problems")
 def get_all_problems(user_id: str = Depends(verify_token)):

@@ -6,6 +6,7 @@ export default function LoginPage({ onLogin }) {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
     const token = await result.user.getIdToken();
+    console.log("Firebase ID Token:", token);
     onLogin(token);
   };
 
