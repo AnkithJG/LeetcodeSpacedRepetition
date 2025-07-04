@@ -4,8 +4,21 @@ from datetime import datetime, timedelta
 from backend.firebase_config import db
 from firebase_admin import auth
 from typing import Optional
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:5173",  
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 SPACING_DAYS = [1, 3, 7, 15, 30]
 
