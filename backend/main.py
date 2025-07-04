@@ -1,49 +1,46 @@
-import firebase_admin
-from firebase_admin import credentials, firestore
+from fastapi import FastAPI, Request
+from pydantic import BaseModel
 from datetime import datetime, timedelta
+from firebase import db
 import os
-from dotenv import load_dotenv
 
-load_dotenv()
+app = FastAPI()
 
-# Initialize Firebase
-cred = credentials.Certificate("serviceAccountKey.json")
-firebase_admin.initialize_app(cred)
-db = firestore.client()
+SPACING_DAYS = [1, 3, 7, 15, 30]
 
-USER_ID = os.getenv("USER_ID")  
+class ProblemLog(BaseModel):
+    user_id: str
+    title: str
+    difficulty: int
+    result: str
+    tags: list[str] = []
 
-def log_problem(title, difficulty, result, tags=[]):
-    doc_ref = db.collection(f'users/{USER_ID}/leetcode_problems').document(title)
-
+@app.post("/log")
+def log_problem(data: ProblemLog):
     now = datetime.utcnow()
-    stage = 0 if result == 'fail' else 1
-    spacing_days = [1, 3, 7, 15, 30]
+    stage = 0 if data.result == "fail" else 1
+    next_review = now + timedelta(days=SPACING_DAYS[stage])
 
-    next_review = now + timedelta(days=spacing_days[stage])
-
+    doc_ref = db.collection(f'users/{data.user_id}/leetcode_problems').document(data.title)
     doc_ref.set({
-        "title": title,
-        "difficulty": difficulty,
-        "last_result": result,
+        "title": data.title,
+        "difficulty": data.difficulty,
+        "last_result": data.result,
         "review_stage": stage,
         "date_solved": now,
         "next_review_date": next_review,
-        "tags": tags
+        "tags": data.tags
     })
+    return {"message": f"{data.title} logged!", "next_review": next_review.date()}
 
-    print(f"Logged: {title} | Next review: {next_review.date()}")
-
-def get_todays_reviews():
+@app.get("/reviews/{user_id}")
+def get_todays_reviews(user_id: str):
     now = datetime.utcnow()
-    docs = db.collection(f'users/{USER_ID}/leetcode_problems') \
+    docs = db.collection(f'users/{user_id}/leetcode_problems') \
              .where("next_review_date", "<=", now).stream()
-    
-    print("Today's Review List:\n")
-    for doc in docs:
-        data = doc.to_dict()
-        print(f"- {data['title']} (difficulty {data['difficulty']}, last_result: {data['last_result']})")
 
-# Example usage:
-# log_problem("LRU Cache", 3, "fail", ["hashmap", "design"])
-# get_todays_reviews()
+    reviews = []
+    for doc in docs:
+        reviews.append(doc.to_dict())
+
+    return {"reviews_due": reviews}
