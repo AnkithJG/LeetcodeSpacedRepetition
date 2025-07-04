@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, Header
 from pydantic import BaseModel
 from datetime import datetime, timedelta
-from firebase import db
+from backend.firebase_config import db
 from firebase_admin import auth
 from typing import Optional
 
