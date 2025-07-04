@@ -1,6 +1,6 @@
 import { useState } from "react";
-import LoginPage from "./components/LoginPage";
-import Dashboard from "./components/Dashboard";
+import LoginPage from "./pages/LoginPage";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   const [token, setToken] = useState(null);
