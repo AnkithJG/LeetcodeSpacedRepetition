@@ -20,20 +20,25 @@ def verify_token(authorization: Optional[str] = Header(None)) -> str:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 class ProblemLog(BaseModel):
-    title: str
+    slug: str              
+    title: str             
     difficulty: int
     result: str
     tags: list[str] = []
 
-# 🔄 Log a problem
 @app.post("/log")
 def log_problem(data: ProblemLog, user_id: str = Depends(verify_token)):
+    problem_doc = db.collection("leetcode_problems_db").document(data.slug).get()
+    if not problem_doc.exists:
+        raise HTTPException(status_code=400, detail="Problem does not exist in database")
+
     now = datetime.utcnow()
     stage = 0 if data.result == "fail" else 1
     next_review = now + timedelta(days=SPACING_DAYS[stage])
 
-    doc_ref = db.collection(f'users/{user_id}/leetcode_problems').document(data.title)
+    doc_ref = db.collection(f'users/{user_id}/leetcode_problems').document(data.slug)
     doc_ref.set({
+        "slug": data.slug,
         "title": data.title,
         "difficulty": data.difficulty,
         "last_result": data.result,
@@ -53,9 +58,9 @@ def get_todays_reviews(user_id: str = Depends(verify_token)):
     reviews = [doc.to_dict() for doc in docs]
     return {"reviews_due": reviews}
 
-
 @app.get("/all_problems")
 def get_all_problems(user_id: str = Depends(verify_token)):
     docs = db.collection(f'users/{user_id}/leetcode_problems').stream()
     all_problems = [doc.to_dict() for doc in docs]
     return {"all_problems": all_problems}
+
