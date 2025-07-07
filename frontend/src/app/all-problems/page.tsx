@@ -152,13 +152,6 @@ export default function AllProblemsPage() {
                   </div>
 
                   <div className="flex items-center space-x-3">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-white/20 text-white hover:bg-white/10 bg-transparent"
-                    >
-                      Review
-                    </Button>
                     <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
                       Edit
                     </Button>

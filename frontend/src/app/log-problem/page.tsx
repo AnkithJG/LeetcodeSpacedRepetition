@@ -187,14 +187,14 @@ const handleSubmit = async (e: React.FormEvent) => {
                         <SelectValue placeholder="Select difficulty" />
                       </SelectTrigger>
                       <SelectContent className="bg-slate-800 border-white/20">
-                        <SelectItem value="Easy" className="text-emerald-400">
-                          Easy
+                        <SelectItem value="1" className="text-emerald-400">
+                          1
                         </SelectItem>
-                        <SelectItem value="Medium" className="text-yellow-400">
-                          Medium
+                        <SelectItem value="2" className="text-yellow-400">
+                          2
                         </SelectItem>
-                        <SelectItem value="Hard" className="text-red-400">
-                          Hard
+                        <SelectItem value="3" className="text-red-400">
+                          3
                         </SelectItem>
                       </SelectContent>
                     </Select>
