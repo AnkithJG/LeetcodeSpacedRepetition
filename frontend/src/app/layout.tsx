@@ -6,8 +6,8 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "LeetCode Spaced Repetition",
-  description: "Master coding interviews with intelligent review scheduling",
+  title: "RepeetCode",
+  description: "Master Leetcode problems with spaced repetition",
 }
 
 export default function RootLayout({
