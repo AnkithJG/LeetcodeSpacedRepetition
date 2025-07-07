@@ -19,7 +19,7 @@ export default function LoginPage() {
       const result = await signInWithPopup(auth, provider)
 
       const token = await result.user.getIdToken()
-      localStorage.setItem("token", token) // store token for future fetches
+      localStorage.setItem("token", token) 
       router.push("/dashboard")
     } catch (err) {
       console.error("Login error:", err)
