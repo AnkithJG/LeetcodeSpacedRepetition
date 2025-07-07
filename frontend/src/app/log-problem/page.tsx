@@ -20,34 +20,66 @@ export default function LogProblemPage() {
     difficulty: "",
     result: "",
     tags: "",
-    notes: "",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setIsSubmitting(true)
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false)
-      setIsSuccess(true)
-
-      // Reset form after success
-      setTimeout(() => {
-        setIsSuccess(false)
-        setFormData({
-          title: "",
-          slug: "",
-          difficulty: "",
-          result: "",
-          tags: "",
-          notes: "",
-        })
-      }, 2000)
-    }, 1500)
+  const token = localStorage.getItem("token")
+  if (!token) {
+    alert("You're not signed in.")
+    setIsSubmitting(false)
+    return
   }
+
+  const payload = {
+    title: formData.title,
+    slug: formData.slug,
+    difficulty: formData.difficulty,
+    result: formData.result,
+    tags: formData.tags
+      .split(",")
+      .map(tag => tag.trim())
+      .filter(tag => tag.length > 0),
+  }
+
+  try {
+    const response = await fetch("http://localhost:8000/log_problem", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to log problem")
+    }
+
+    setIsSubmitting(false)
+    setIsSuccess(true)
+
+    setTimeout(() => {
+      setIsSuccess(false)
+      setFormData({
+        title: "",
+        slug: "",
+        difficulty: "",
+        result: "",
+        tags: "",
+      })
+    }, 2000)
+  } catch (error) {
+    console.error("Error logging problem:", error)
+    alert("Something went wrong.")
+    setIsSubmitting(false)
+  }
+}
+
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -207,20 +239,6 @@ export default function LogProblemPage() {
                     className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-emerald-500/50"
                   />
                   <p className="text-gray-400 text-sm">Separate multiple tags with commas</p>
-                </div>
-
-                {/* Notes */}
-                <div className="space-y-2">
-                  <Label htmlFor="notes" className="text-white font-medium">
-                    Notes (Optional)
-                  </Label>
-                  <Textarea
-                    id="notes"
-                    placeholder="Add any notes about your approach, what you learned, or areas to focus on..."
-                    value={formData.notes}
-                    onChange={(e) => handleInputChange("notes", e.target.value)}
-                    className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-emerald-500/50 min-h-[100px]"
-                  />
                 </div>
 
                 {/* Submit Button */}

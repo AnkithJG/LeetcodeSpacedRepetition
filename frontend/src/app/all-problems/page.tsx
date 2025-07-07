@@ -1,108 +1,53 @@
 "use client"
 
+import { useEffect, useState } from "react"
+import { getIdToken } from "firebase/auth"
+import { auth } from "@/lib/firebase_init"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Code2, Search, Filter, ArrowLeft, Calendar, Tag } from "lucide-react"
 import Link from "next/link"
-import { useState } from "react"
 
 export default function AllProblemsPage() {
   const [searchTerm, setSearchTerm] = useState("")
+  const [problems, setProblems] = useState<any[]>([])
 
-  const allProblems = [
-    {
-      id: 1,
-      title: "Two Sum",
-      slug: "two-sum",
-      difficulty: "Easy",
-      tags: ["Array", "Hash Table"],
-      lastResult: "pass",
-      nextReview: "Today",
-      attempts: 3,
-      successRate: 100,
-    },
-    {
-      id: 2,
-      title: "Add Two Numbers",
-      slug: "add-two-numbers",
-      difficulty: "Medium",
-      tags: ["Linked List", "Math", "Recursion"],
-      lastResult: "pass",
-      nextReview: "Tomorrow",
-      attempts: 2,
-      successRate: 100,
-    },
-    {
-      id: 3,
-      title: "Longest Substring Without Repeating Characters",
-      slug: "longest-substring-without-repeating-characters",
-      difficulty: "Medium",
-      tags: ["Hash Table", "String", "Sliding Window"],
-      lastResult: "fail",
-      nextReview: "Today",
-      attempts: 4,
-      successRate: 75,
-    },
-    {
-      id: 4,
-      title: "Median of Two Sorted Arrays",
-      slug: "median-of-two-sorted-arrays",
-      difficulty: "Hard",
-      tags: ["Array", "Binary Search", "Divide and Conquer"],
-      lastResult: "pass",
-      nextReview: "Today",
-      attempts: 5,
-      successRate: 60,
-    },
-    {
-      id: 5,
-      title: "Longest Palindromic Substring",
-      slug: "longest-palindromic-substring",
-      difficulty: "Medium",
-      tags: ["String", "Dynamic Programming"],
-      lastResult: "pass",
-      nextReview: "In 2 days",
-      attempts: 3,
-      successRate: 67,
-    },
-    {
-      id: 6,
-      title: "ZigZag Conversion",
-      slug: "zigzag-conversion",
-      difficulty: "Medium",
-      tags: ["String"],
-      lastResult: "pass",
-      nextReview: "In 3 days",
-      attempts: 2,
-      successRate: 100,
-    },
-  ]
+  useEffect(() => {
+    const fetchProblems = async () => {
+      const user = auth.currentUser
+      if (!user) return
+      const token = await getIdToken(user)
+      const res = await fetch("http://localhost:8000/all_problems", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      const data = await res.json()
+      setProblems(data.all_problems || [])
+    }
 
-  const getDifficultyColor = (difficulty: string) => {
+    fetchProblems()
+  }, [])
+
+  const getDifficultyColor = (difficulty: number) => {
     switch (difficulty) {
-      case "Easy":
+      case 1:
         return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
-      case "Medium":
+      case 2:
         return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
-      case "Hard":
+      case 3:
         return "bg-red-500/20 text-red-400 border-red-500/30"
       default:
         return "bg-gray-500/20 text-gray-400 border-gray-500/30"
     }
   }
 
-  const getSuccessRateColor = (rate: number) => {
-    if (rate >= 80) return "text-emerald-400"
-    if (rate >= 60) return "text-yellow-400"
-    return "text-red-400"
-  }
-
-  const filteredProblems = allProblems.filter(
+  const filteredProblems = problems.filter(
     (problem) =>
       problem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      problem.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase())),
+      (problem.tags || []).some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase())),
   )
 
   return (
@@ -124,7 +69,7 @@ export default function AllProblemsPage() {
                 </div>
                 <div>
                   <h1 className="text-xl font-bold text-white">All Problems</h1>
-                  <p className="text-sm text-gray-400">{allProblems.length} problems tracked</p>
+                  <p className="text-sm text-gray-400">{problems.length} problems tracked</p>
                 </div>
               </div>
             </div>
@@ -163,7 +108,7 @@ export default function AllProblemsPage() {
         <div className="space-y-4">
           {filteredProblems.map((problem) => (
             <Card
-              key={problem.id}
+              key={problem.slug}
               className="bg-white/5 backdrop-blur-xl border-white/10 hover:bg-white/10 transition-all duration-200 cursor-pointer group"
             >
               <CardContent className="p-6">
@@ -173,9 +118,11 @@ export default function AllProblemsPage() {
                       <h3 className="text-lg font-semibold text-white group-hover:text-emerald-400 transition-colors">
                         {problem.title}
                       </h3>
-                      <Badge className={`${getDifficultyColor(problem.difficulty)} border`}>{problem.difficulty}</Badge>
+                      <Badge className={`${getDifficultyColor(problem.difficulty)} border`}>
+                        {["", "Easy", "Medium", "Hard"][problem.difficulty]}
+                      </Badge>
                       <div className="flex items-center">
-                        {problem.lastResult === "pass" ? (
+                        {problem.last_result === "pass" ? (
                           <div className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
                             <span className="text-white text-xs">✓</span>
                           </div>
@@ -188,7 +135,7 @@ export default function AllProblemsPage() {
                     </div>
 
                     <div className="flex flex-wrap gap-2 mb-3">
-                      {problem.tags.map((tag) => (
+                      {(problem.tags || []).map((tag: string) => (
                         <Badge key={tag} variant="outline" className="text-xs border-gray-600 text-gray-300">
                           <Tag className="w-3 h-3 mr-1" />
                           {tag}
@@ -199,11 +146,7 @@ export default function AllProblemsPage() {
                     <div className="flex items-center space-x-6 text-sm">
                       <div className="flex items-center text-gray-400">
                         <Calendar className="w-4 h-4 mr-1" />
-                        Next: {problem.nextReview}
-                      </div>
-                      <div className="text-gray-400">Attempts: {problem.attempts}</div>
-                      <div className={`font-medium ${getSuccessRateColor(problem.successRate)}`}>
-                        Success: {problem.successRate}%
+                        Next: {new Date(problem.next_review_date).toLocaleDateString()}
                       </div>
                     </div>
                   </div>
