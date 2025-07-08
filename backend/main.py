@@ -41,6 +41,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def root():
+    return {"message": "RepeetCode backend is live!"}
+
 
 def calculate_current_streak(dates: list[str]) -> int:
     if not dates:
