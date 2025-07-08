@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Code2, Search, Filter, ArrowLeft, Calendar, Tag } from "lucide-react"
+import { Code2, Search, Filter, ArrowLeft, Calendar, Tag, ArrowRight } from "lucide-react"
 import Link from "next/link"
+
 
 export default function AllProblemsPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -118,11 +119,16 @@ export default function AllProblemsPage() {
           </CardContent>
         </Card>
 
-        {/* Problems List */}
         <div className="space-y-4">
-          {filteredProblems.map((problem) => (
+        {filteredProblems.map((problem) => (
+          <a
+            key={problem.slug}
+            href={`https://leetcode.com/problems/${problem.slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block"
+          >
             <Card
-              key={problem.slug}
               className="bg-white/5 backdrop-blur-xl border-white/10 hover:bg-white/10 transition-all duration-200 cursor-pointer group"
             >
               <CardContent className="p-6">
@@ -151,12 +157,15 @@ export default function AllProblemsPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-3"></div>
+                  {/* Arrow icon aligned right */}
+                  <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-emerald-400 transition-colors" />
                 </div>
               </CardContent>
             </Card>
-          ))}
-        </div>
+          </a>
+        ))}
+      </div>
+
 
         {filteredProblems.length === 0 && (
           <Card className="bg-white/5 backdrop-blur-xl border-white/10">
