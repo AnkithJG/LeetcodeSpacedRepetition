@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { getAuth } from "firebase/auth"  // <-- import firebase auth
 import { auth } from "@/lib/firebase_init"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -36,7 +35,6 @@ export default function LogProblemPage() {
   // Fetch problem bank on mount
   useEffect(() => {
     async function fetchProblems() {
-      const auth = getAuth()
       const user = auth.currentUser
 
       if (!user) {
@@ -45,9 +43,7 @@ export default function LogProblemPage() {
       }
 
       try {
-        // Force refresh token to ensure it's valid
         const token = await user.getIdToken(true)
-
         const res = await fetch("http://localhost:8000/problem_bank", {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -86,7 +82,6 @@ export default function LogProblemPage() {
     e.preventDefault()
     setIsSubmitting(true)
 
-    const auth = getAuth()
     const user = auth.currentUser
 
     if (!user) {
@@ -96,9 +91,7 @@ export default function LogProblemPage() {
     }
 
     try {
-      // Force refresh token before POST
       const token = await user.getIdToken(true)
-
       const payload = {
         slug: formData.slug,
         title: formData.title,

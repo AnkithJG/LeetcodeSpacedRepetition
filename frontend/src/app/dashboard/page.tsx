@@ -62,6 +62,15 @@ export default function DashboardPage() {
     }
 
     fetchData()
+
+    // Re-fetch when page/tab becomes visible
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        fetchData()
+      }
+    }
+    document.addEventListener("visibilitychange", handleVisibility)
+    return () => document.removeEventListener("visibilitychange", handleVisibility)
   }, [])
 
   const getDifficultyText = (difficulty: number | string) => {
