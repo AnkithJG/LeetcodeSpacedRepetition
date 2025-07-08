@@ -20,6 +20,32 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+def calculate_current_streak(dates: list[str]) -> int:
+    if not dates:
+        return 0
+    
+    logged_days = set(datetime.fromisoformat(d).date() for d in dates)
+    
+    streak = 0
+    today = datetime.utcnow().date()
+
+    while today in logged_days:
+        streak += 1
+        today -= timedelta(days=1)
+    
+    return streak
+
+
+def get_user_problem_logs(user_id: str):
+    try:
+        docs = db.collection(f'users/{user_id}/leetcode_problems').stream()
+        return [doc.to_dict() for doc in docs]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching user logs: {str(e)}")
+
+
+
 def verify_token(authorization: Optional[str] = Header(None)) -> str:
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
@@ -36,6 +62,22 @@ class ProblemLog(BaseModel):
     difficulty: int       
     result: str           
     tags: list[str] = []
+
+@app.get("/dashboard_stats")
+def dashboard_stats(user_id: str = Depends(verify_token)):
+    problem_logs = get_user_problem_logs(user_id)
+    
+    timestamps = []
+    for log in problem_logs:
+        if log.get("date_solved"):
+            date_solved = log["date_solved"]
+            if isinstance(date_solved, datetime):
+                timestamps.append(date_solved.isoformat())
+            else:
+                timestamps.append(str(date_solved))
+    
+    streak = calculate_current_streak(timestamps)
+    return {"current_streak": streak}
 
 def calculate_next_review(difficulty: int, last_result: str, last_review_date: Optional[datetime]) -> datetime:
     now = datetime.utcnow()
@@ -80,12 +122,16 @@ def log_problem(data: ProblemLog, user_id: str = Depends(verify_token)):
     })
     return {"message": f"{data.title} logged!", "next_review": next_review.date()}
 
+from datetime import datetime, time
+
 @app.get("/reviews")
 def get_todays_reviews(user_id: str = Depends(verify_token)):
     now = datetime.utcnow()
 
+    end_of_today = datetime.combine(now.date(), time(23, 59, 59, 999999))
+
     due_docs = db.collection(f'users/{user_id}/leetcode_problems') \
-                 .where("next_review_date", "<=", now).stream()
+                 .where("next_review_date", "<=", end_of_today).stream()
 
     due_reviews = [doc.to_dict() for doc in due_docs]
 
@@ -103,6 +149,7 @@ def get_todays_reviews(user_id: str = Depends(verify_token)):
         "reviews_due": [],
         "next_up": next_up[0] if next_up else None
     }
+
 
 @app.get("/all_problems")
 def get_all_problems(user_id: str = Depends(verify_token)):
