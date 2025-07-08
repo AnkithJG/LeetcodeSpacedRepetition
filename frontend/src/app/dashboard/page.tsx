@@ -20,7 +20,8 @@ export default function DashboardPage() {
       try {
         const user = auth.currentUser
         if (!user) return
-        const token = await getIdToken(user)
+        const token = await getIdToken(user, /* forceRefresh */ true)
+
 
         // Fetch today's reviews and next up
         const res1 = await fetch("http://localhost:8000/reviews", {
@@ -73,29 +74,6 @@ export default function DashboardPage() {
     return () => document.removeEventListener("visibilitychange", handleVisibility)
   }, [])
 
-  const getDifficultyText = (difficulty: number | string) => {
-    if (typeof difficulty === "string") return difficulty
-    switch (difficulty) {
-      case 1: return "Easy"
-      case 2: return "Medium"
-      case 3: return "Hard"
-      default: return "Unknown"
-    }
-  }
-
-  const getDifficultyColor = (difficulty: number | string) => {
-    const diffText = getDifficultyText(difficulty)
-    switch (diffText) {
-      case "Easy":
-        return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
-      case "Medium":
-        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
-      case "Hard":
-        return "bg-red-500/20 text-red-400 border-red-500/30"
-      default:
-        return "bg-gray-500/20 text-gray-400 border-gray-500/30"
-    }
-  }
 
   const formatDate = (dateField: any) => {
     if (!dateField) return "No date"
@@ -207,9 +185,6 @@ export default function DashboardPage() {
                           <h3 className="text-lg font-semibold text-white group-hover:text-emerald-400 transition-colors">
                             {problem.title}
                           </h3>
-                          <Badge className={`${getDifficultyColor(problem.difficulty)} border`}>
-                            {getDifficultyText(problem.difficulty)}
-                          </Badge>
                           <div className="flex items-center">
                             {problem.last_result === "pass" ? (
                               <div className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
@@ -262,9 +237,6 @@ export default function DashboardPage() {
                   <div>
                     <div className="flex items-center space-x-2 mb-1">
                       <h4 className="text-white font-medium">{nextUp.title}</h4>
-                      <Badge className={`${getDifficultyColor(nextUp.difficulty)} border text-xs`}>
-                        {getDifficultyText(nextUp.difficulty)}
-                      </Badge>
                     </div>
                     <p className="text-gray-400 text-sm">{formatDate(nextUp.next_review_date)}</p>
                   </div>

@@ -118,20 +118,7 @@ export default function AllProblemsPage() {
                       <h3 className="text-lg font-semibold text-white group-hover:text-emerald-400 transition-colors">
                         {problem.title}
                       </h3>
-                      <Badge className={`${getDifficultyColor(problem.difficulty)} border`}>
-                        {["", "Easy", "Medium", "Hard"][problem.difficulty]}
-                      </Badge>
-                      <div className="flex items-center">
-                        {problem.last_result === "pass" ? (
-                          <div className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
-                            <span className="text-white text-xs">✓</span>
-                          </div>
-                        ) : (
-                          <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
-                            <span className="text-white text-xs">✗</span>
-                          </div>
-                        )}
-                      </div>
+
                     </div>
 
                     <div className="flex flex-wrap gap-2 mb-3">
@@ -152,9 +139,6 @@ export default function AllProblemsPage() {
                   </div>
 
                   <div className="flex items-center space-x-3">
-                    <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
-                      Edit
-                    </Button>
                   </div>
                 </div>
               </CardContent>
