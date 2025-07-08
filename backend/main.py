@@ -11,14 +11,21 @@ import firebase_admin
 from firebase_admin import credentials
 import logging
 import json
+from google.oauth2 import service_account
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Only initialize if not already done (important for hot reload!)
 if not firebase_admin._apps:
-    cred = credentials.Certificate("serviceAccountKey.json")
+    service_account_json = os.environ.get('GOOGLE_SERVICE_ACCOUNT_JSON')
+    if service_account_json:
+        service_account_info = json.loads(service_account_json)
+        cred = credentials.Certificate(service_account_info)
+    else:
+        # Fallback to local file (for development)
+        cred = credentials.Certificate("serviceAccountKey.json")
+    
     firebase_admin.initialize_app(cred)
 
 app = FastAPI()
