@@ -22,7 +22,6 @@ export default function DashboardPage() {
         if (!user) return
         const token = await getIdToken(user, /* forceRefresh */ true)
 
-
         // Fetch today's reviews and next up
         const res1 = await fetch("http://localhost:8000/reviews", {
           headers: { Authorization: `Bearer ${token}` },
@@ -73,7 +72,6 @@ export default function DashboardPage() {
     document.addEventListener("visibilitychange", handleVisibility)
     return () => document.removeEventListener("visibilitychange", handleVisibility)
   }, [])
-
 
   const formatDate = (dateField: any) => {
     if (!dateField) return "No date"
@@ -175,9 +173,12 @@ export default function DashboardPage() {
             {todayProblems.length > 0 ? (
               <div className="space-y-4">
                 {todayProblems.map((problem, idx) => (
-                  <div
+                  <a
                     key={idx}
-                    className="bg-white/5 rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200 cursor-pointer group"
+                    href={`https://leetcode.com/problems/${problem.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block bg-white/5 rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200 cursor-pointer group"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
@@ -207,7 +208,7 @@ export default function DashboardPage() {
                       </div>
                       <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-emerald-400 transition-colors" />
                     </div>
-                  </div>
+                  </a>
                 ))}
               </div>
             ) : (
@@ -232,7 +233,12 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             {nextUp ? (
-              <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+              <a
+                href={`https://leetcode.com/problems/${nextUp.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block bg-white/5 rounded-lg p-3 border border-white/10 hover:bg-white/10 transition-all duration-200 cursor-pointer"
+              >
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="flex items-center space-x-2 mb-1">
@@ -240,8 +246,9 @@ export default function DashboardPage() {
                     </div>
                     <p className="text-gray-400 text-sm">{formatDate(nextUp.next_review_date)}</p>
                   </div>
+                  <ArrowRight className="w-5 h-5 text-gray-400 hover:text-blue-400 transition-colors" />
                 </div>
-              </div>
+              </a>
             ) : (
               <p className="text-gray-500 text-sm">No upcoming problems!</p>
             )}
