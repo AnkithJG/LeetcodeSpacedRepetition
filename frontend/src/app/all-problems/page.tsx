@@ -19,13 +19,27 @@ export default function AllProblemsPage() {
       const user = auth.currentUser
       if (!user) return
       const token = await getIdToken(user)
-      const res = await fetch("http://localhost:8000/all_problems", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      const data = await res.json()
-      setProblems(data.all_problems || [])
+      try {
+        const res = await fetch("http://localhost:8000/all_problems", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        if (!res.ok) throw new Error("Failed to fetch problems")
+        const data = await res.json()
+
+        // Sort problems by next_review_date ascending (earliest first)
+        const sortedProblems = (data.all_problems || []).slice().sort((a: { next_review_date: string | number | Date }, b: { next_review_date: string | number | Date }) => {
+          const dateA = new Date(a.next_review_date).getTime()
+          const dateB = new Date(b.next_review_date).getTime()
+          return dateA - dateB
+        })
+
+        setProblems(sortedProblems)
+      } catch (error) {
+        console.error("Error fetching problems:", error)
+        setProblems([])
+      }
     }
 
     fetchProblems()
@@ -118,7 +132,6 @@ export default function AllProblemsPage() {
                       <h3 className="text-lg font-semibold text-white group-hover:text-emerald-400 transition-colors">
                         {problem.title}
                       </h3>
-
                     </div>
 
                     <div className="flex flex-wrap gap-2 mb-3">
@@ -138,8 +151,7 @@ export default function AllProblemsPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-3">
-                  </div>
+                  <div className="flex items-center space-x-3"></div>
                 </div>
               </CardContent>
             </Card>
