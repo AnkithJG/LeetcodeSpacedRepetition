@@ -2,11 +2,11 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import { auth } from "@/lib/firebase_init"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Chrome, Code2, Brain, Zap, Notebook, Repeat, Info } from "lucide-react"
+import { Chrome, Brain, Zap, Notebook, Repeat, Info } from "lucide-react"
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -56,7 +56,7 @@ export default function LoginPage() {
           <div className="font-semibold text-white text-base">What is Spaced Repetition?</div>
           <p>
             Spaced repetition is a scientifically proven learning technique that reviews information at increasing intervals —
-            just before you're about to forget it — to <span className="text-emerald-400 font-medium">maximize long-term retention</span>.
+            just before you&apos;re about to forget it — to <span className="text-emerald-400 font-medium">maximize long-term retention</span>.
           </p>
           <p>
             It’s the study method used by <span className="text-cyan-400 font-medium">top students, language learners, and memory champions</span> around the world — from med school to competitive exams.
@@ -64,11 +64,11 @@ export default function LoginPage() {
 
           <div className="font-semibold text-white text-base mt-4">How RepeetCode Works</div>
           <p>
-            RepeetCode applies spaced repetition to coding interviews. Instead of brute-forcing problems daily, you'll review
+            RepeetCode applies spaced repetition to coding interviews. Instead of brute-forcing problems daily, you&apos;ll review
             them at the <span className="text-cyan-400">optimal time</span> to lock them into memory.
           </p>
           <p>
-            Just log the problems you solve (or attempt), and we'll intelligently schedule your reviews.
+            Just log the problems you solve (or attempt), and we&apos;ll intelligently schedule your reviews.
           </p>
           <p>
             Recommended sets: NeetCode’s Blind 75, 150, or 250 — log them here as you go.
@@ -135,6 +135,7 @@ export default function LoginPage() {
   )
 }
 
+//eslint-disable-next-line @typescript-eslint/no-explicit-any
 function Feature({ icon, label, bg, border }: any) {
   return (
     <div className="text-center">

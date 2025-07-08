@@ -6,11 +6,13 @@ import { auth } from "@/lib/firebase_init"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Code2, Brain, Calendar, Plus, ArrowRight, Clock, Target, Repeat } from "lucide-react"
+import { Brain, Calendar, Plus, ArrowRight, Clock, Target, Repeat } from "lucide-react"
 import Link from "next/link"
 
 export default function DashboardPage() {
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [todayProblems, setTodayProblems] = useState<any[]>([])
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [nextUp, setNextUp] = useState<any | null>(null)
   const [totalProblems, setTotalProblems] = useState(0)
   const [streak, setStreak] = useState<number>(0)
@@ -73,6 +75,7 @@ export default function DashboardPage() {
     return () => document.removeEventListener("visibilitychange", handleVisibility)
   }, [])
 
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
   const formatDate = (dateField: any) => {
     if (!dateField) return "No date"
     if (dateField._seconds) {
@@ -166,7 +169,7 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-white flex items-center">
               <Calendar className="w-6 h-6 mr-3 text-emerald-400" />
-              Today's Review
+              Today&apos;s Review
             </CardTitle>
           </CardHeader>
           <CardContent>

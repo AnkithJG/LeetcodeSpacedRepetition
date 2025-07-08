@@ -13,6 +13,7 @@ import Link from "next/link"
 
 export default function AllProblemsPage() {
   const [searchTerm, setSearchTerm] = useState("")
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [problems, setProblems] = useState<any[]>([])
 
   useEffect(() => {
@@ -45,19 +46,6 @@ export default function AllProblemsPage() {
 
     fetchProblems()
   }, [])
-
-  const getDifficultyColor = (difficulty: number) => {
-    switch (difficulty) {
-      case 1:
-        return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
-      case 2:
-        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
-      case 3:
-        return "bg-red-500/20 text-red-400 border-red-500/30"
-      default:
-        return "bg-gray-500/20 text-gray-400 border-gray-500/30"
-    }
-  }
 
   const filteredProblems = problems.filter(
     (problem) =>
