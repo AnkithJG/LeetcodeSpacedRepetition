@@ -3,6 +3,10 @@ from psycopg2.extras import RealDictCursor
 from fastapi import HTTPException
 from contextlib import contextmanager
 import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 @contextmanager
 def get_db_cursor():
@@ -12,7 +16,7 @@ def get_db_cursor():
             host="db.igbrtovzwzggsshovtak.supabase.co",
             database="postgres",
             user="postgres",
-            password=os.getenv("DB_PASS"),  
+            password="repeetcodedb9926*",  
             port=5432,
             cursor_factory=RealDictCursor
         )
