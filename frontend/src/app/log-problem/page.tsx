@@ -12,15 +12,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { CheckCircle, ArrowLeft, Plus, Code2 } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { CheckCircle, ArrowLeft, Plus, Code2, Info } from "lucide-react"
 import Link from "next/link"
-import { Input } from "@/components/ui/input" // If you have a UI input component
 
 interface Problem {
   slug: string
   title: string
   tags: string[]
-  official_difficulty: string // from backend
+  official_difficulty: string
 }
 
 export default function LogProblemPage() {
@@ -34,11 +35,12 @@ export default function LogProblemPage() {
   const [isSuccess, setIsSuccess] = useState(false)
   const [search, setSearch] = useState("")
 
-  // Fetch problem bank on mount
+  // Popover open state for hover + click behavior on info icon
+  const [popoverOpen, setPopoverOpen] = useState(false)
+
   useEffect(() => {
     async function fetchProblems() {
       const user = auth.currentUser
-
       if (!user) {
         alert("Please sign in first.")
         return
@@ -47,13 +49,9 @@ export default function LogProblemPage() {
       try {
         const token = await user.getIdToken(true)
         const res = await fetch("http://localhost:8000/problem_bank", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         })
-
         if (!res.ok) throw new Error("Failed to fetch problem bank")
-
         const data = await res.json()
         setProblemBank(data.problems || [])
       } catch (error) {
@@ -61,10 +59,10 @@ export default function LogProblemPage() {
         setProblemBank([])
       }
     }
+
     fetchProblems()
   }, [])
 
-  // When user selects a problem from dropdown, auto-fill title and slug
   function onProblemSelect(slug: string) {
     const prob = problemBank.find((p) => p.slug === slug)
     if (prob) {
@@ -85,7 +83,6 @@ export default function LogProblemPage() {
     setIsSubmitting(true)
 
     const user = auth.currentUser
-
     if (!user) {
       alert("You're not signed in.")
       setIsSubmitting(false)
@@ -121,7 +118,6 @@ export default function LogProblemPage() {
     }
   }
 
-  // Filtered problems for dropdown
   const filteredProblems = problemBank.filter(
     (p) =>
       p.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -130,7 +126,6 @@ export default function LogProblemPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Header */}
       <div className="border-b border-white/10 bg-black/20 backdrop-blur-xl">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center space-x-4">
           <Link href="/dashboard">
@@ -183,88 +178,118 @@ export default function LogProblemPage() {
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Problem Selector */}
-                <div className="space-y-2">
-                  <Label htmlFor="problemSelect" className="text-white font-medium">
-                    Select Problem *
-                  </Label>
-                  <Select
-                    value={formData.slug}
-                    onValueChange={(value) => {
-                      handleInputChange("slug", value)
-                      onProblemSelect(value)
-                    }}
-                    name="problemSelect"
-                  >
-                    <SelectTrigger className="bg-cyan-900/60 border-cyan-400/40 text-cyan-200 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition">
-                      <SelectValue
-                        placeholder="Search or select problem"
-                        className="text-cyan-200"
-                      />
-                    </SelectTrigger>
-                    <SelectContent className="bg-cyan-950 border-cyan-400/40 max-h-80 overflow-auto text-cyan-100">
-                      <div className="sticky top-0 z-10 bg-cyan-950 px-2 py-2">
-                        <Input
-                          autoFocus
-                          placeholder="Type to search..."
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                          className="bg-cyan-900/60 border-cyan-400/40 text-cyan-200 placeholder-cyan-400 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400"
-                        />
-                      </div>
-                      {filteredProblems.length === 0 ? (
-                        <SelectItem value="loading" disabled className="text-cyan-400">
-                          No problems found...
-                        </SelectItem>
-                      ) : (
-                        <>
-                          {filteredProblems.slice(0, 50).map((problem) => (
-                            <SelectItem
-                              key={problem.slug}
-                              value={problem.slug}
-                              className="hover:bg-cyan-800/60 text-cyan-100 focus:bg-emerald-700/60"
-                            >
-                              {problem.title} <span className="text-cyan-400">({problem.official_difficulty})</span>
-                            </SelectItem>
-                          ))}
-                          {filteredProblems.length > 50 && (
-                            <div className="text-xs text-cyan-400 px-2 py-1">
-                              Showing first 50 results. Please refine your search if you don't see desired problem.
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <form onSubmit={handleSubmit} className="space-y-10">
+                {/* Row: Problem + Difficulty */}
+                <div className="flex flex-col md:flex-row md:space-x-8 space-y-6 md:space-y-0">
+                  {/* Problem Selector */}
+                  <div className="flex-1 space-y-2">
+                    <Label htmlFor="problemSelect" className="text-white font-semibold text-md">
+                      Select Problem *
+                    </Label>
+                    <Select
+                      value={formData.slug}
+                      onValueChange={(value) => {
+                        handleInputChange("slug", value)
+                        onProblemSelect(value)
+                      }}
+                      name="problemSelect"
+                    >
+                      <SelectTrigger className="h-14 text-base px-4 bg-cyan-900/60 border-cyan-400/40 text-cyan-200">
+                        <SelectValue placeholder="Search or select problem" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-cyan-950 border-cyan-400/40 max-h-80 overflow-auto text-cyan-100">
+                        <div className="sticky top-0 z-10 bg-cyan-950 px-2 py-2">
+                          <Input
+                            autoFocus
+                            placeholder="Type to search..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="bg-cyan-900/60 border-cyan-400/40 text-cyan-200 placeholder-cyan-400"
+                          />
+                        </div>
+                        {filteredProblems.length === 0 ? (
+                          <SelectItem value="loading" disabled className="text-cyan-400">
+                            No problems found...
+                          </SelectItem>
+                        ) : (
+                          <>
+                            {filteredProblems.slice(0, 50).map((problem) => (
+                              <SelectItem
+                                key={problem.slug}
+                                value={problem.slug}
+                                className="hover:bg-cyan-800/60 text-cyan-100 focus:bg-emerald-700/60"
+                              >
+                                {problem.title}{" "}
+                                <span className="text-cyan-400">({problem.official_difficulty})</span>
+                              </SelectItem>
+                            ))}
+                          </>
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                {/* Personal Difficulty */}
-                <div className="space-y-2">
-                  <Label className="text-white font-medium">Personal Difficulty (1-5) *</Label>
-                  <Select
-                    value={formData.personalDifficulty}
-                    onValueChange={(value) => handleInputChange("personalDifficulty", value)}
-                  >
-                    <SelectTrigger className="bg-cyan-900/60 border-cyan-400/40 text-cyan-200 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition">
-                      <SelectValue placeholder="Select difficulty" className="text-cyan-200" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-cyan-950 border-cyan-400/40 text-cyan-100">
-                      {[1, 2, 3, 4, 5].map((num) => (
-                        <SelectItem
-                          key={num}
-                          value={num.toString()}
-                          className="hover:bg-cyan-800/60 text-cyan-100 focus:bg-emerald-700/60"
+                  {/* Personal Difficulty */}
+                  <div className="w-full md:w-64 space-y-2 relative">
+                    <div className="flex items-center space-x-2 -mt-3 -ml-4">
+                      <Label className="text-white font-semibold text-md">Personal Difficulty (1-5) *</Label>
+
+                      <Popover
+                        open={popoverOpen}
+                        onOpenChange={setPopoverOpen}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="text-cyan-300 hover:text-white cursor-pointer"
+                            onMouseEnter={() => setPopoverOpen(true)}
+                            onMouseLeave={() => setPopoverOpen(false)}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setPopoverOpen((open) => !open)
+                            }}
+                          >
+                            <Info className="w-4 h-4" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          onMouseEnter={() => setPopoverOpen(true)}
+                          onMouseLeave={() => setPopoverOpen(false)}
+                          className="bg-cyan-950 text-cyan-100 text-sm max-w-xs border border-cyan-400/30"
                         >
-                          {num}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                          Rate how difficult this problem felt <strong>after solving it</strong>.
+                          <br />
+                          <strong>1 = Easiest</strong>, <strong>5 = Hardest</strong>.
+                          <br />
+                          Harder problems will be shown to you more frequently.
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <Select
+                      value={formData.personalDifficulty}
+                      onValueChange={(value) => handleInputChange("personalDifficulty", value)}
+                    >
+                      <SelectTrigger className="h-14 text-base px-4 bg-cyan-900/60 border-cyan-400/40 text-cyan-200">
+                        <SelectValue placeholder="Select difficulty" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-cyan-950 border-cyan-400/40 text-cyan-100">
+                        {[1, 2, 3, 4, 5].map((num) => (
+                          <SelectItem
+                            key={num}
+                            value={num.toString()}
+                            className="hover:bg-cyan-800/60 text-cyan-100 focus:bg-emerald-700/60"
+                          >
+                            {num}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
-                {/* Submit Button */}
-                <div className="flex justify-end space-x-4 pt-6">
+                {/* Submit */}
+                <div className="flex justify-end space-x-4 pt-8">
                   <Link href="/dashboard">
                     <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 bg-transparent">
                       Cancel
@@ -273,7 +298,7 @@ export default function LogProblemPage() {
                   <Button
                     type="submit"
                     disabled={!formData.slug || !formData.personalDifficulty || isSubmitting}
-                    className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-semibold px-8 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-semibold px-10 py-3 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? (
                       <div className="flex items-center">

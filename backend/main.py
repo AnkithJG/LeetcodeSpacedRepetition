@@ -92,17 +92,19 @@ def dashboard_stats(user_id: str = Depends(verify_token)):
 def calculate_next_review(difficulty: int, last_review_date: Optional[datetime]) -> datetime:
     now = datetime.utcnow()
 
-    # If never reviewed before, schedule soon depending on difficulty
+    # If never reviewed before, review sooner for harder problems
+    initial_days = {1: 8, 2: 6, 3: 4, 4: 2, 5: 1}
     if not last_review_date:
-        # Harder problems = fewer days until next review
-        initial_days = {1: 8, 2: 6, 3: 4, 4: 2, 5: 1}
         return now + timedelta(days=initial_days[difficulty])
 
     days_since_last = (now - last_review_date).days
 
-    # Harder problems = reviewed more often → smaller multiplier
-    multiplier = {1: 2.0, 2: 1.8, 3: 1.6, 4: 1.4, 5: 1.2}
-    next_gap = max(1, int(days_since_last * (1 / multiplier[difficulty])))
+    # Harder problems reviewed more often → smaller multiplier
+    # So inverse of difficulty scale: easier = larger gap
+    multiplier = {1: 0.5, 2: 0.7, 3: 0.9, 4: 1.2, 5: 1.5}
+    next_gap = max(1, int(days_since_last * multiplier[difficulty]))
+
+    return now + timedelta(days=min(next_gap, 90))
 
     return now + timedelta(days=min(next_gap, 90))
 @app.post("/log")
