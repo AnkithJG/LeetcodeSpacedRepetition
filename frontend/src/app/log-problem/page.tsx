@@ -164,13 +164,13 @@ export default function LogProblemPage() {
                 <p className="text-gray-400 mb-6">Your problem has been added to the spaced repetition system</p>
                 <div className="flex justify-center space-x-4">
                   <Link href="/dashboard">
-                    <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600">
+                    <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 transition-none duration-0">
                       Go to Dashboard
                     </Button>
                   </Link>
                   <Button
                     variant="outline"
-                    className="border-white/20 text-white hover:bg-white/10 bg-transparent"
+                    className="border-white/20 text-white hover:bg-white/10 bg-transparent transition-none duration-0"
                     onClick={() => setIsSuccess(false)}
                   >
                     Log Another
@@ -194,21 +194,21 @@ export default function LogProblemPage() {
                       }}
                       name="problemSelect"
                     >
-                      <SelectTrigger className="h-14 text-base px-4 bg-cyan-900/60 border-cyan-400/40 text-cyan-200">
+                      <SelectTrigger className="h-14 text-base px-4 bg-cyan-900/60 border-cyan-400/40 text-cyan-200 transition-none duration-0">
                         <SelectValue placeholder="Search or select problem" />
                       </SelectTrigger>
-                      <SelectContent className="bg-cyan-950 border-cyan-400/40 max-h-80 overflow-auto text-cyan-100">
+                      <SelectContent className="bg-cyan-950 border-cyan-400/40 max-h-80 overflow-auto text-cyan-100 transition-none duration-0">
                         <div className="sticky top-0 z-10 bg-cyan-950 px-2 py-2">
                           <Input
                             autoFocus
                             placeholder="Type to search..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="bg-cyan-900/60 border-cyan-400/40 text-cyan-200 placeholder-cyan-400"
+                            className="bg-cyan-900/60 border-cyan-400/40 text-cyan-200 placeholder-cyan-400 transition-none duration-0"
                           />
                         </div>
                         {filteredProblems.length === 0 ? (
-                          <SelectItem value="loading" disabled className="text-cyan-400">
+                          <SelectItem value="loading" disabled className="text-cyan-400 transition-none duration-0">
                             No problems found...
                           </SelectItem>
                         ) : (
@@ -217,7 +217,7 @@ export default function LogProblemPage() {
                               <SelectItem
                                 key={problem.slug}
                                 value={problem.slug}
-                                className="hover:bg-cyan-800/60 text-cyan-100 focus:bg-emerald-700/60"
+                                className="hover:bg-cyan-800/60 text-cyan-100 focus:bg-emerald-700/60 transition-none duration-0"
                               >
                                 {problem.title}{" "}
                                 <span className="text-cyan-400">({problem.official_difficulty})</span>
@@ -242,7 +242,7 @@ export default function LogProblemPage() {
                           <Button
                             size="icon"
                             variant="ghost"
-                            className="text-cyan-300 hover:text-white cursor-pointer"
+                            className="text-cyan-300 hover:text-white cursor-pointer transition-none duration-0"
                             onMouseEnter={() => setPopoverOpen(true)}
                             onMouseLeave={() => setPopoverOpen(false)}
                             onClick={(e) => {
@@ -256,7 +256,7 @@ export default function LogProblemPage() {
                         <PopoverContent
                           onMouseEnter={() => setPopoverOpen(true)}
                           onMouseLeave={() => setPopoverOpen(false)}
-                          className="bg-cyan-950 text-cyan-100 text-sm max-w-xs border border-cyan-400/30"
+                          className="bg-cyan-950 text-cyan-100 text-sm max-w-xs border border-cyan-400/30 transition-none duration-0"
                         >
                           Rate how difficult this problem felt <strong>after solving it</strong>.
                           <br />
@@ -270,15 +270,15 @@ export default function LogProblemPage() {
                       value={formData.personalDifficulty}
                       onValueChange={(value) => handleInputChange("personalDifficulty", value)}
                     >
-                      <SelectTrigger className="h-14 text-base px-4 bg-cyan-900/60 border-cyan-400/40 text-cyan-200">
+                      <SelectTrigger className="h-14 text-base px-4 bg-cyan-900/60 border-cyan-400/40 text-cyan-200 transition-none duration-0">
                         <SelectValue placeholder="Select difficulty" />
                       </SelectTrigger>
-                      <SelectContent className="bg-cyan-950 border-cyan-400/40 text-cyan-100">
+                      <SelectContent className="bg-cyan-950 border-cyan-400/40 text-cyan-100 transition-none duration-0">
                         {[1, 2, 3, 4, 5].map((num) => (
                           <SelectItem
                             key={num}
                             value={num.toString()}
-                            className="hover:bg-cyan-800/60 text-cyan-100 focus:bg-emerald-700/60"
+                            className="hover:bg-cyan-800/60 text-cyan-100 focus:bg-emerald-700/60 transition-none duration-0"
                           >
                             {num}
                           </SelectItem>
@@ -291,14 +291,17 @@ export default function LogProblemPage() {
                 {/* Submit */}
                 <div className="flex justify-end space-x-4 pt-8">
                   <Link href="/dashboard">
-                    <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 bg-transparent">
+                    <Button
+                      variant="outline"
+                      className="border-white/20 text-white hover:bg-white/10 bg-transparent transition-none duration-0"
+                    >
                       Cancel
                     </Button>
                   </Link>
                   <Button
                     type="submit"
                     disabled={!formData.slug || !formData.personalDifficulty || isSubmitting}
-                    className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-semibold px-10 py-3 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-semibold px-10 py-3 text-lg rounded-lg shadow-lg hover:shadow-xl transition-none duration-0 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? (
                       <div className="flex items-center">

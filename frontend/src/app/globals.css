@@ -91,10 +91,6 @@
   background: rgba(255, 255, 255, 0.5);
 }
 
-* {
-  transition: all 0.2s ease-in-out;
-}
-
 @keyframes gradient {
   0% {
     background-position: 0% 50%;
