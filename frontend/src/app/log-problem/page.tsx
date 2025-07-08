@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select"
 import { CheckCircle, ArrowLeft, Plus, Code2 } from "lucide-react"
 import Link from "next/link"
+import { Input } from "@/components/ui/input" // If you have a UI input component
 
 interface Problem {
   slug: string
@@ -31,6 +32,7 @@ export default function LogProblemPage() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [search, setSearch] = useState("")
 
   // Fetch problem bank on mount
   useEffect(() => {
@@ -112,14 +114,19 @@ export default function LogProblemPage() {
       setIsSubmitting(false)
       setIsSuccess(true)
       setFormData({ title: "", slug: "", personalDifficulty: "" })
-
-      setTimeout(() => setIsSuccess(false), 2000)
     } catch (error) {
       console.error("Error logging problem:", error)
       alert("Something went wrong.")
       setIsSubmitting(false)
     }
   }
+
+  // Filtered problems for dropdown
+  const filteredProblems = problemBank.filter(
+    (p) =>
+      p.title.toLowerCase().includes(search.toLowerCase()) ||
+      p.slug.toLowerCase().includes(search.toLowerCase())
+  )
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -190,20 +197,43 @@ export default function LogProblemPage() {
                     }}
                     name="problemSelect"
                   >
-                    <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                      <SelectValue placeholder="Search or select problem" />
+                    <SelectTrigger className="bg-cyan-900/60 border-cyan-400/40 text-cyan-200 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition">
+                      <SelectValue
+                        placeholder="Search or select problem"
+                        className="text-cyan-200"
+                      />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-white/20 max-h-60 overflow-auto">
-                      {problemBank.length === 0 ? (
-                        <SelectItem value="loading" disabled>
-                          Loading problems...
+                    <SelectContent className="bg-cyan-950 border-cyan-400/40 max-h-80 overflow-auto text-cyan-100">
+                      <div className="sticky top-0 z-10 bg-cyan-950 px-2 py-2">
+                        <Input
+                          autoFocus
+                          placeholder="Type to search..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          className="bg-cyan-900/60 border-cyan-400/40 text-cyan-200 placeholder-cyan-400 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400"
+                        />
+                      </div>
+                      {filteredProblems.length === 0 ? (
+                        <SelectItem value="loading" disabled className="text-cyan-400">
+                          No problems found...
                         </SelectItem>
                       ) : (
-                        problemBank.map((problem) => (
-                          <SelectItem key={problem.slug} value={problem.slug}>
-                            {problem.title} ({problem.official_difficulty})
-                          </SelectItem>
-                        ))
+                        <>
+                          {filteredProblems.slice(0, 50).map((problem) => (
+                            <SelectItem
+                              key={problem.slug}
+                              value={problem.slug}
+                              className="hover:bg-cyan-800/60 text-cyan-100 focus:bg-emerald-700/60"
+                            >
+                              {problem.title} <span className="text-cyan-400">({problem.official_difficulty})</span>
+                            </SelectItem>
+                          ))}
+                          {filteredProblems.length > 50 && (
+                            <div className="text-xs text-cyan-400 px-2 py-1">
+                              Showing first 50 results. Please refine your search if you don't see desired problem.
+                            </div>
+                          )}
+                        </>
                       )}
                     </SelectContent>
                   </Select>
@@ -216,12 +246,16 @@ export default function LogProblemPage() {
                     value={formData.personalDifficulty}
                     onValueChange={(value) => handleInputChange("personalDifficulty", value)}
                   >
-                    <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                      <SelectValue placeholder="Select difficulty" />
+                    <SelectTrigger className="bg-cyan-900/60 border-cyan-400/40 text-cyan-200 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition">
+                      <SelectValue placeholder="Select difficulty" className="text-cyan-200" />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-white/20">
+                    <SelectContent className="bg-cyan-950 border-cyan-400/40 text-cyan-100">
                       {[1, 2, 3, 4, 5].map((num) => (
-                        <SelectItem key={num} value={num.toString()}>
+                        <SelectItem
+                          key={num}
+                          value={num.toString()}
+                          className="hover:bg-cyan-800/60 text-cyan-100 focus:bg-emerald-700/60"
+                        >
                           {num}
                         </SelectItem>
                       ))}
