@@ -1,7 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { getIdToken } from "firebase/auth"
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  reauthenticateWithPopup,
+} from "firebase/auth"
 import { auth } from "@/lib/firebase_init"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,48 +13,65 @@ import { Brain, Calendar, Plus, ArrowRight, Clock, Target, Repeat } from "lucide
 import Link from "next/link"
 
 export default function DashboardPage() {
-  //eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [todayProblems, setTodayProblems] = useState<any[]>([])
-  //eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [nextUp, setNextUp] = useState<any | null>(null)
   const [totalProblems, setTotalProblems] = useState(0)
   const [streak, setStreak] = useState<number>(0)
 
+  async function getValidUserToken(): Promise<string | null> {
+    let user = auth.currentUser
+
+    if (!user) {
+      try {
+        const provider = new GoogleAuthProvider()
+        const result = await signInWithPopup(auth, provider)
+        user = result.user
+      } catch (err) {
+        console.error("Initial login failed:", err)
+        return null
+      }
+    }
+
+    try {
+      return await user.getIdToken(true)
+    } catch (err) {
+      console.warn("Token refresh failed, attempting re-auth...")
+      try {
+        const provider = new GoogleAuthProvider()
+        await reauthenticateWithPopup(user!, provider)
+        return await user!.getIdToken(true)
+      } catch (reauthErr) {
+        console.error("Re-authentication failed:", reauthErr)
+        return null
+      }
+    }
+  }
+
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const user = auth.currentUser
-        if (!user) return
-        const token = await getIdToken(user, /* forceRefresh */ true)
+      const token = await getValidUserToken()
+      if (!token) return
 
-        // Fetch today's reviews and next up
+      try {
         const res1 = await fetch("https://repeetcodebackend.onrender.com/reviews", {
           headers: { Authorization: `Bearer ${token}` },
         })
-
         if (!res1.ok) throw new Error("Failed to fetch /reviews")
-
         const reviewData = await res1.json()
         setTodayProblems(reviewData.reviews_due || [])
         setNextUp(reviewData.next_up || null)
 
-        // Fetch all problems
         const res2 = await fetch("https://repeetcodebackend.onrender.com/all_problems", {
           headers: { Authorization: `Bearer ${token}` },
         })
-
         if (!res2.ok) throw new Error("Failed to fetch /all_problems")
-
         const allData = await res2.json()
         setTotalProblems(allData.all_problems?.length || 0)
 
-        // Fetch streak
         const res3 = await fetch("https://repeetcodebackend.onrender.com/dashboard_stats", {
           headers: { Authorization: `Bearer ${token}` },
         })
-
         if (!res3.ok) throw new Error("Failed to fetch /dashboard_stats")
-
         const statsData = await res3.json()
         setStreak(statsData.current_streak || 0)
       } catch (error) {
@@ -64,17 +85,16 @@ export default function DashboardPage() {
 
     fetchData()
 
-    // Re-fetch when page/tab becomes visible
     const handleVisibility = () => {
       if (document.visibilityState === "visible") {
         fetchData()
       }
     }
+
     document.addEventListener("visibilitychange", handleVisibility)
     return () => document.removeEventListener("visibilitychange", handleVisibility)
   }, [])
 
-  //eslint-disable-next-line @typescript-eslint/no-explicit-any
   const formatDate = (dateField: any) => {
     if (!dateField) return "No date"
     if (dateField._seconds) {
@@ -85,7 +105,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Header */}
       <div className="border-b border-white/10 bg-black/20 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
@@ -116,7 +135,6 @@ export default function DashboardPage() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border-emerald-500/20 backdrop-blur-xl">
             <CardContent className="p-6">
@@ -161,7 +179,6 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Today's Review */}
         <Card className="bg-white/5 backdrop-blur-xl border-white/10 mb-8">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-white flex items-center">
@@ -205,7 +222,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Next Up */}
         <Card className="bg-white/5 backdrop-blur-xl border-white/10">
           <CardHeader>
             <CardTitle className="text-xl font-bold text-white flex items-center">
