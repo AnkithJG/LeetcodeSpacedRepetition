@@ -9,9 +9,9 @@ import { Brain, Calendar, Plus, ArrowRight, Clock, Target, Repeat } from "lucide
 import Link from "next/link"
 
 export default function DashboardPage() {
-    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [todayProblems, setTodayProblems] = useState<any[]>([])
-    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [nextUp, setNextUp] = useState<any | null>(null)
   const [totalProblems, setTotalProblems] = useState(0)
   const [streak, setStreak] = useState<number>(0)
@@ -87,27 +87,25 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
       <div className="border-b border-white/10 bg-black/20 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-xl flex items-center justify-center">
                 <Repeat className="w-5 h-5 text-white" />
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-white">RepeetCode</h1>
-              </div>
+              <h1 className="text-xl font-bold text-white">RepeetCode</h1>
             </div>
-            <div className="flex items-center space-x-3">
-              <Link href="/log-problem">
-                <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-semibold px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 space-y-2 sm:space-y-0">
+              <Link href="/log-problem" className="w-full sm:w-auto">
+                <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-semibold px-3 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto flex justify-center items-center">
                   <Plus className="w-4 h-4 mr-2" />
                   Log Problem
                 </Button>
               </Link>
-              <Link href="/all-problems">
+              <Link href="/all-problems" className="w-full sm:w-auto">
                 <Button
                   variant="outline"
-                  className="border-cyan-500/50 text-white hover:bg-cyan-600 hover:text-white bg-transparent transition-all duration-200"
+                  className="border-cyan-500/50 text-white hover:bg-cyan-600 hover:text-white bg-transparent transition-all duration-200 w-full sm:w-auto"
                 >
                   View All
                 </Button>
@@ -117,7 +115,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border-emerald-500/20 backdrop-blur-xl">
