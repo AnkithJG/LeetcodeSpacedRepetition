@@ -144,8 +144,11 @@ export default function AllProblemsPage() {
               <div
                 id="filter-panel"
                 ref={filterRef}
-                className="mt-4 p-4 bg-black/30 rounded-lg border border-white/20 max-w-xs text-white shadow-lg z-50 absolute sm:relative sm:mt-6"
-                style={{ right: 0, left: "auto" }}
+                className="
+                  mt-4 p-4 bg-black/80 rounded-lg border border-white/20 max-w-xs text-white shadow-lg z-50
+                  absolute sm:relative sm:mt-6 right-0 left-auto sm:max-w-none sm:w-auto
+                  w-full
+                "
               >
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold">Sort By</h3>

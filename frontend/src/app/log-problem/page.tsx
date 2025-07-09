@@ -35,7 +35,6 @@ export default function LogProblemPage() {
   const [isSuccess, setIsSuccess] = useState(false)
   const [search, setSearch] = useState("")
 
-  // Popover open state for hover + click behavior on info icon
   const [popoverOpen, setPopoverOpen] = useState(false)
 
   useEffect(() => {
@@ -127,20 +126,22 @@ export default function LogProblemPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <div className="border-b border-white/10 bg-black/20 backdrop-blur-xl">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center space-x-4">
-          <Link href="/dashboard">
-            <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+        <div className="max-w-4xl mx-auto px-6 py-4 flex flex-col sm:flex-row items-center sm:justify-between space-y-3 sm:space-y-0">
+          <Link href="/dashboard" className="w-full sm:w-auto">
+            <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white w-full sm:w-auto">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Dashboard
             </Button>
           </Link>
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-xl flex items-center justify-center">
+          <div className="flex items-center space-x-3 w-full sm:w-auto overflow-hidden">
+            <div className="w-10 h-10 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-xl flex items-center justify-center flex-shrink-0">
               <Plus className="w-5 h-5 text-white" />
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-white">Log New Problem</h1>
-              <p className="text-sm text-gray-400">Add a LeetCode problem to your spaced repetition system</p>
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold text-white truncate">Log New Problem</h1>
+              <p className="text-sm text-gray-400 truncate">
+                Add a LeetCode problem to your spaced repetition system
+              </p>
             </div>
           </div>
         </div>
@@ -161,16 +162,18 @@ export default function LogProblemPage() {
                   <CheckCircle className="w-8 h-8 text-emerald-400" />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Problem Logged Successfully!</h3>
-                <p className="text-gray-400 mb-6">Your problem has been added to the spaced repetition system</p>
-                <div className="flex justify-center space-x-4">
-                  <Link href="/dashboard">
-                    <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 transition-none duration-0">
+                <p className="text-gray-400 mb-6">
+                  Your problem has been added to the spaced repetition system
+                </p>
+                <div className="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
+                  <Link href="/dashboard" className="w-full sm:w-auto">
+                    <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 transition-none duration-0 w-full sm:w-auto">
                       Go to Dashboard
                     </Button>
                   </Link>
                   <Button
                     variant="outline"
-                    className="border-white/20 text-white hover:bg-white/10 bg-transparent transition-none duration-0"
+                    className="border-white/20 text-white hover:bg-white/10 bg-transparent transition-none duration-0 w-full sm:w-auto"
                     onClick={() => setIsSuccess(false)}
                   >
                     Log Another
@@ -194,7 +197,7 @@ export default function LogProblemPage() {
                       }}
                       name="problemSelect"
                     >
-                      <SelectTrigger className="h-14 text-base px-4 bg-cyan-900/60 border-cyan-400/40 text-cyan-200 transition-none duration-0">
+                      <SelectTrigger className="h-14 text-base px-4 bg-cyan-900/60 border-cyan-400/40 text-cyan-200 transition-none duration-0 w-full">
                         <SelectValue placeholder="Search or select problem" />
                       </SelectTrigger>
                       <SelectContent className="bg-cyan-950 border-cyan-400/40 max-h-80 overflow-auto text-cyan-100 transition-none duration-0">
@@ -234,10 +237,7 @@ export default function LogProblemPage() {
                     <div className="flex items-center space-x-2 -mt-3 -ml-4">
                       <Label className="text-white font-semibold text-md">Personal Difficulty (1-5) *</Label>
 
-                      <Popover
-                        open={popoverOpen}
-                        onOpenChange={setPopoverOpen}
-                      >
+                      <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                         <PopoverTrigger asChild>
                           <Button
                             size="icon"
@@ -270,7 +270,7 @@ export default function LogProblemPage() {
                       value={formData.personalDifficulty}
                       onValueChange={(value) => handleInputChange("personalDifficulty", value)}
                     >
-                      <SelectTrigger className="h-14 text-base px-4 bg-cyan-900/60 border-cyan-400/40 text-cyan-200 transition-none duration-0">
+                      <SelectTrigger className="h-14 text-base px-4 bg-cyan-900/60 border-cyan-400/40 text-cyan-200 transition-none duration-0 w-full">
                         <SelectValue placeholder="Select difficulty" />
                       </SelectTrigger>
                       <SelectContent className="bg-cyan-950 border-cyan-400/40 text-cyan-100 transition-none duration-0">
@@ -289,11 +289,11 @@ export default function LogProblemPage() {
                 </div>
 
                 {/* Submit */}
-                <div className="flex justify-end space-x-4 pt-8">
-                  <Link href="/dashboard">
+                <div className="flex flex-col sm:flex-row justify-end space-y-4 sm:space-y-0 sm:space-x-4 pt-8">
+                  <Link href="/dashboard" className="w-full sm:w-auto">
                     <Button
                       variant="outline"
-                      className="border-white/20 text-white hover:bg-white/10 bg-transparent transition-none duration-0"
+                      className="border-white/20 text-white hover:bg-white/10 bg-transparent transition-none duration-0 w-full sm:w-auto"
                     >
                       Cancel
                     </Button>
@@ -301,15 +301,15 @@ export default function LogProblemPage() {
                   <Button
                     type="submit"
                     disabled={!formData.slug || !formData.personalDifficulty || isSubmitting}
-                    className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-semibold px-10 py-3 text-lg rounded-lg shadow-lg hover:shadow-xl transition-none duration-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-semibold px-10 py-3 text-lg rounded-lg shadow-lg hover:shadow-xl transition-none duration-0 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
                   >
                     {isSubmitting ? (
-                      <div className="flex items-center">
+                      <div className="flex items-center justify-center">
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                         Logging Problem...
                       </div>
                     ) : (
-                      <div className="flex items-center">
+                      <div className="flex items-center justify-center">
                         <Plus className="w-4 h-4 mr-2" />
                         Log Problem
                       </div>
