@@ -200,7 +200,10 @@ export default function LogProblemPage() {
                       <SelectTrigger className="h-14 text-base px-4 bg-cyan-900/60 border-cyan-400/40 text-cyan-200 transition-none duration-0 w-full">
                         <SelectValue placeholder="Search or select problem" />
                       </SelectTrigger>
-                      <SelectContent className="bg-cyan-950 border-cyan-400/40 max-h-80 overflow-auto text-cyan-100 transition-none duration-0">
+                      <SelectContent   className="
+                          bg-cyan-950 border-cyan-400/40 text-cyan-100 transition-none duration-0
+                          max-h-[60vh] overflow-auto
+                        ">
                         <div className="sticky top-0 z-10 bg-cyan-950 px-2 py-2">
                           <Input
                             autoFocus
