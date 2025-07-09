@@ -12,13 +12,12 @@ load_dotenv()
 def get_db_cursor():
     conn = None
     try:
-        # Try connection pooler first (often fixes Railway issues)
         conn = psycopg2.connect(
-            host="aws-0-us-west-1.pooler.supabase.com",  # Connection pooler
+            host="aws-0-us-east-2.pooler.supabase.com",  # Pooler host
             database="postgres",
             user="postgres.igbrtovzwzggsshovtak",  # Note the format change
             password="repeetcodedb9926*",  
-            port=5432,
+            port=6543,  # Different port for pooler!
             cursor_factory=RealDictCursor
         )
         cursor = conn.cursor()
@@ -30,4 +29,5 @@ def get_db_cursor():
         raise HTTPException(500, f"Database error: {str(e)}")
     finally:
         if conn:
+            conn.close()
             conn.close()
