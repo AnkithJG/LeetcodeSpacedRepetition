@@ -22,7 +22,7 @@ export default function AllProblemsPage() {
       if (!user) return
       const token = await getIdToken(user)
       try {
-        const res = await fetch("https://repeetcode-backend-production.up.railway.app/all_problems", {
+        const res = await fetch("https://repeetcodebackend.onrender.com/all_problems", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

@@ -48,7 +48,7 @@ export default function LogProblemPage() {
 
       try {
         const token = await user.getIdToken(true)
-        const res = await fetch("https://repeetcode-backend-production.up.railway.app/problem_bank", {
+        const res = await fetch("https://repeetcodebackend.onrender.com/problem_bank", {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!res.ok) throw new Error("Failed to fetch problem bank")
@@ -97,7 +97,7 @@ export default function LogProblemPage() {
         difficulty: Number(formData.personalDifficulty),
       }
 
-      const response = await fetch("https://repeetcode-backend-production.up.railway.app/log", {
+      const response = await fetch("https://repeetcodebackend.onrender.com/log", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
