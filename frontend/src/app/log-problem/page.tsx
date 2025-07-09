@@ -197,7 +197,7 @@ export default function LogProblemPage() {
                       }}
                       name="problemSelect"
                     >
-                      <SelectTrigger className="h-14 text-base px-4 bg-cyan-900/60 border-cyan-400/40 text-cyan-200 transition-none duration-0 w-full">
+                      <SelectTrigger className="h-14 text-base px-4 bg-cyan-900/60 border-cyan-400/40 text-cyan-200 transition-none duration-0">
                         <SelectValue placeholder="Search or select problem" />
                       </SelectTrigger>
                       <SelectContent   className="
