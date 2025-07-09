@@ -201,13 +201,6 @@ export default function DashboardPage() {
                             )}
                           </div>
                         </div>
-                        <div className="flex flex-wrap gap-2">
-                          {problem.tags?.map((tag: string, i: number) => (
-                            <Badge key={i} variant="outline" className="text-xs border-gray-600 text-gray-300">
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
                       </div>
                       <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-emerald-400 transition-colors" />
                     </div>
