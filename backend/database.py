@@ -12,10 +12,11 @@ load_dotenv()
 def get_db_cursor():
     conn = None
     try:
+        # Try connection pooler first (often fixes Railway issues)
         conn = psycopg2.connect(
-            host="db.igbrtovzwzggsshovtak.supabase.co",
+            host="aws-0-us-west-1.pooler.supabase.com",  # Connection pooler
             database="postgres",
-            user="postgres",
+            user="postgres.igbrtovzwzggsshovtak",  # Note the format change
             password="repeetcodedb9926*",  
             port=5432,
             cursor_factory=RealDictCursor
