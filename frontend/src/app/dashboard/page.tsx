@@ -188,17 +188,6 @@ export default function DashboardPage() {
                           <h3 className="text-lg font-semibold text-white group-hover:text-emerald-400 transition-colors">
                             {problem.title}
                           </h3>
-                          <div className="flex items-center">
-                            {problem.last_result === "pass" ? (
-                              <div className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
-                                <span className="text-white text-xs">✓</span>
-                              </div>
-                            ) : (
-                              <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
-                                <span className="text-white text-xs">✗</span>
-                              </div>
-                            )}
-                          </div>
                         </div>
                       </div>
                       <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-emerald-400 transition-colors" />
