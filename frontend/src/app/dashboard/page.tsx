@@ -5,7 +5,6 @@ import { getIdToken } from "firebase/auth"
 import { auth } from "@/lib/firebase_init"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Brain, Calendar, Plus, ArrowRight, Clock, Target, Repeat } from "lucide-react"
 import Link from "next/link"
 
