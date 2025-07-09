@@ -1,11 +1,7 @@
 "use client"
 
 import { useEffect, useState, useRef } from "react"
-import {
-  GoogleAuthProvider,
-  signInWithPopup,
-  reauthenticateWithPopup,
-} from "firebase/auth"
+import { getIdToken } from "firebase/auth"
 import { auth } from "@/lib/firebase_init"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -21,43 +17,14 @@ export default function AllProblemsPage() {
   //eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [problems, setProblems] = useState<any[]>([])
 
+  // Ref for detecting clicks outside the filter panel
   const filterRef = useRef<HTMLDivElement>(null)
-
-  // Helper function to get a valid token with automatic login/reauth if needed
-  async function getValidUserToken(): Promise<string | null> {
-    let user = auth.currentUser
-
-    if (!user) {
-      try {
-        const provider = new GoogleAuthProvider()
-        const result = await signInWithPopup(auth, provider)
-        user = result.user
-      } catch (err) {
-        console.error("Initial login failed:", err)
-        return null
-      }
-    }
-
-    try {
-      return await user.getIdToken(true)
-    } catch (err) {
-      console.warn("Token refresh failed, attempting re-authentication...")
-      try {
-        const provider = new GoogleAuthProvider()
-        await reauthenticateWithPopup(user!, provider)
-        return await user!.getIdToken(true)
-      } catch (reauthErr) {
-        console.error("Re-authentication failed:", reauthErr)
-        return null
-      }
-    }
-  }
 
   useEffect(() => {
     const fetchProblems = async () => {
-      const token = await getValidUserToken()
-      if (!token) return
-
+      const user = auth.currentUser
+      if (!user) return
+      const token = await getIdToken(user)
       try {
         const res = await fetch("https://repeetcodebackend.onrender.com/all_problems", {
           headers: {
@@ -77,6 +44,7 @@ export default function AllProblemsPage() {
     fetchProblems()
   }, [])
 
+  // Close filter panel if clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
@@ -91,6 +59,7 @@ export default function AllProblemsPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [filterOpen])
 
+  // Filter by search term
   const filteredProblems = problems.filter((problem) => {
     const term = searchTerm.toLowerCase()
     return (
@@ -99,6 +68,7 @@ export default function AllProblemsPage() {
     )
   })
 
+  // Sort filtered problems by chosen method
   const sortedProblems = filteredProblems.slice().sort((a, b) => {
     if (sortBy === "due_date") {
       const dateA = new Date(a.next_review_date).getTime()
@@ -259,6 +229,7 @@ export default function AllProblemsPage() {
                       </div>
                     </div>
 
+                    {/* Arrow icon aligned right */}
                     <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-emerald-400 transition-colors ml-4 flex-shrink-0" />
                   </div>
                 </CardContent>
