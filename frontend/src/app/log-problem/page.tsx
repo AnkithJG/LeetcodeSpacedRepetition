@@ -16,11 +16,6 @@ import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { CheckCircle, ArrowLeft, Plus, Code2, Info } from "lucide-react"
 import Link from "next/link"
-import {
-  GoogleAuthProvider,
-  signInWithPopup,
-  reauthenticateWithPopup,
-} from "firebase/auth"
 
 interface Problem {
   slug: string
@@ -42,54 +37,30 @@ export default function LogProblemPage() {
 
   const [popoverOpen, setPopoverOpen] = useState(false)
 
-useEffect(() => {
-  async function fetchProblems() {
-    let user = auth.currentUser
-
-    if (!user) {
-      try {
-        const provider = new GoogleAuthProvider()
-        const result = await signInWithPopup(auth, provider)
-        user = result.user
-      } catch (error) {
-        console.error("Login failed:", error)
-        alert("Sign in required to fetch problem bank.")
+  useEffect(() => {
+    async function fetchProblems() {
+      const user = auth.currentUser
+      if (!user) {
+        alert("Please sign in first.")
         return
       }
-    }
 
-    try {
-      const token = await user.getIdToken(true) 
-      const res = await fetch("https://repeetcodebackend.onrender.com/problem_bank", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-
-      if (!res.ok) {
-        if (res.status === 401) {
-          const provider = new GoogleAuthProvider()
-          await reauthenticateWithPopup(user, provider)
-          const refreshedToken = await user.getIdToken(true)
-          const retryRes = await fetch("https://repeetcodebackend.onrender.com/problem_bank", {
-            headers: { Authorization: `Bearer ${refreshedToken}` },
-          })
-          const retryData = await retryRes.json()
-          setProblemBank(retryData.problems || [])
-        } else {
-          throw new Error("Failed to fetch problem bank")
-        }
-      } else {
+      try {
+        const token = await user.getIdToken(true)
+        const res = await fetch("https://repeetcodebackend.onrender.com/problem_bank", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (!res.ok) throw new Error("Failed to fetch problem bank")
         const data = await res.json()
         setProblemBank(data.problems || [])
+      } catch (error) {
+        console.error("Error fetching problems:", error)
+        setProblemBank([])
       }
-    } catch (error) {
-      console.error("Error fetching problems:", error)
-      setProblemBank([])
     }
-  }
 
-  fetchProblems()
-}, [])
-
+    fetchProblems()
+  }, [])
 
   function onProblemSelect(slug: string) {
     const prob = problemBank.find((p) => p.slug === slug)
@@ -226,7 +197,7 @@ useEffect(() => {
                       }}
                       name="problemSelect"
                     >
-                      <SelectTrigger className="h-14 text-base px-4 bg-cyan-900/60 border-cyan-400/40 text-cyan-200 transition-none duration-0">
+                      <SelectTrigger className="h-14 text-base px-4 bg-cyan-900/60 border-cyan-400/40 text-cyan-200 transition-none duration-0 w-full">
                         <SelectValue placeholder="Search or select problem" />
                       </SelectTrigger>
                       <SelectContent   className="
