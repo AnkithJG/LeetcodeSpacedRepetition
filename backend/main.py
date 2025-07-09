@@ -32,9 +32,9 @@ if not firebase_admin._apps:
 app = FastAPI()
 
 origins = [
-    "http://localhost:3000",         # keep this for local dev
-    "https://repeetcode.com",        # add your production domain
-    "https://www.repeetcode.com"     # optional if you use www
+    "http://localhost:3000",         
+    "https://repeetcode.com",        
+    "https://www.repeetcode.com"     
 ]
 
 app.add_middleware(

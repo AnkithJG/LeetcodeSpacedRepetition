@@ -25,7 +25,7 @@ export default function DashboardPage() {
         const token = await getIdToken(user, /* forceRefresh */ true)
 
         // Fetch today's reviews and next up
-        const res1 = await fetch("https://repeetcodebackend.onrender.com/reviews", {
+        const res1 = await fetch("https://repeetcode-backend-production.up.railway.app/reviews", {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -36,7 +36,7 @@ export default function DashboardPage() {
         setNextUp(reviewData.next_up || null)
 
         // Fetch all problems
-        const res2 = await fetch("https://repeetcodebackend.onrender.com/all_problems", {
+        const res2 = await fetch("https://repeetcode-backend-production.up.railway.app/all_problems", {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -46,7 +46,7 @@ export default function DashboardPage() {
         setTotalProblems(allData.all_problems?.length || 0)
 
         // Fetch streak
-        const res3 = await fetch("https://repeetcodebackend.onrender.com/dashboard_stats", {
+        const res3 = await fetch("https://repeetcode-backend-production.up.railway.app/dashboard_stats", {
           headers: { Authorization: `Bearer ${token}` },
         })
 
